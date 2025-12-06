@@ -24,10 +24,18 @@ The project follows a hybrid data approach:
 
 ## Prerequisites
 
-Before running the project, ensure you have the following installed:
-* Docker & Docker Compose
-* Node.js (v14 or higher)
-* Go (v1.17 or higher)
+This project relies on Bash scripts and Hyperledger Fabric binaries designed for Unix-based systems.
+
+**Operating System:**
+* **Linux** (Ubuntu/Debian recommended) OR
+* **Windows** (Must use **WSL2** - Windows Subsystem for Linux) OR
+* **macOS**
+
+**Software:**
+* **Docker** & **Docker Compose** (Daemon must be running)
+* **Node.js** (v14 or higher)
+* **Go** (v1.17 or higher)
+* **Hyperledger Fabric Samples** (v2.4+ recommended)
 
 ## Project Structure
 
