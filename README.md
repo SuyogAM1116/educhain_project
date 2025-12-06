@@ -17,6 +17,11 @@ The project follows a hybrid data approach:
 2. **Off-Chain (Local):** Stores granular details (Daily Attendance logs, Phase-wise Grade breakdowns) to preserve ledger performance and privacy.
 3. **Verification:** Off-chain data is hashed and cross-referenced with the on-chain hash to ensure integrity.
 
+
+
+[Image of Hyperledger Fabric transaction flow]
+
+
 ## Prerequisites
 
 Before running the project, ensure you have the following installed:
@@ -28,7 +33,7 @@ Before running the project, ensure you have the following installed:
 
 * **backend/**: Node.js Express application acting as the middleware API.
 * **chaincode/**: Go Smart Contracts defining the business logic.
-* **network/**: Scripts to bootstrap the Fabric test-network and deploy chaincode.
+* **network/**: Scripts to bootstrap the Fabric test-network, deploy chaincode, and generate crypto-material.
 
 ## Installation & Setup
 
@@ -37,25 +42,27 @@ Follow these steps to set up the environment from scratch.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/your-username/EduChain.git](https://github.com/your-username/EduChain.git)
-cd EduChain
+git clone [https://github.com/SuyogAM1116/educhain_project.git](https://github.com/SuyogAM1116/educhain_project.git)
+cd educhain_project
 ```
 
-### 2. Start the Network
+### 2. Start the Network & Generate Identities
 
-We have provided a utility script to interface with the standard Fabric `test-network`.
+We have provided a unified script that:
+1. Starts the Hyperledger Fabric Test Network (with CouchDB and CAs).
+2. Deploys the `educhain` Smart Contract.
+3. Automatically registers users (User1, Admin).
+4. **Generates and copies the required crypto-keys into the backend wallet.**
 
-*Note: Ensure you have the `fabric-samples` directory installed on your machine and that the deploy script points to it.*
-
-1. Open `network/deploy.sh`.
-2. Edit the `TEST_NETWORK_DIR` variable to point to your local `fabric-samples/test-network` folder.
-3. Run the deployment script:
+1. Open `network/deploy.sh` and ensure `TEST_NETWORK_DIR` points to your `fabric-samples` location.
+2. Run the script:
 
 ```bash
 cd network
 chmod +x deploy.sh
 ./deploy.sh
 ```
+**Note: This script performs manual key generation using fabric-ca-client to simulate a real-world MSP setup. It automatically populates the backend/wallet directory, so you do not need to run separate enrollment scripts.**
 
 ### 3. Backend Setup
 
@@ -68,7 +75,7 @@ npm install
 
 ## Configuration (Critical)
 
-Because Hyperledger Fabric relies on cryptographic identity files specific to your machine, you must configure the backend to connect to your local network.
+While the deployment script handles the network and keys, you must ensure the application code points to the correct wallet location on your machine.
 
 ### Step 1: Connection Profile
 
@@ -97,19 +104,9 @@ const walletPath = path.resolve('/home/Fabric/educhain-backend/wallet');
 const walletPath = path.join(process.cwd(), 'wallet');
 ```
 
-### Step 3: Initialize Identities
-
-You need to generate the Admin and User credentials before the app can talk to the blockchain.
-
-```bash
-# Run the enrollment scripts (ensure these exist in your utils or root)
-node enrollAdmin.js
-node registerUser.js
-```
-
 ## Running the Application
 
-Start the backend server:
+Once the network is up and the paths are configured, start the backend server:
 
 ```bash
 node app.js
