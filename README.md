@@ -1,6 +1,19 @@
 # EduChain: Hyperledger-Powered Decentralized University Services Management Framework
 
-EduChain is a decentralized framework designed to manage university services securely and transparently. Leveraging Hyperledger Fabric, this project eliminates paper-based inefficiencies and prevents fraud in academic credentialing through a permissioned blockchain network.
+**EduChain** is a decentralized framework designed to manage university services securely and transparently. Leveraging **Hyperledger Fabric**, this project eliminates paper-based inefficiencies and prevents fraud in academic credentialing through a permissioned blockchain network.
+
+## Abstract
+
+In the current educational landscape, centralized databases are vulnerable to inefficiencies, errors, and security breaches, leading to a rise in fraudulent qualifications. EduChain addresses these challenges by implementing a decentralized, tamper-proof ledger where only accredited institutions can issue verifiable credentials.
+
+The framework employs a **hybrid data architecture** to balance transparency with privacy: critical identity and accreditation data are stored on-chain, while granular logs (like daily attendance) remain off-chain, cryptographically linked via hashes.
+
+### Key Components
+
+* **UGC Management Portal:** Allows regulators to approve/reject university affiliations and monitor accreditation status.
+* **College Portal:** Enables institutions to manage faculty, enroll students, and issue digital certificates.
+* **Smart Contracts (Chaincode):** Automates logic for registration, grading, and credential issuance using Go.
+* **Hybrid Storage:** Uses a local off-chain data store for heavy datasets (attendance/grades) while anchoring their integrity proofs on the blockchain.
 
 ## Overview
 
@@ -10,17 +23,17 @@ The system creates a tamper-proof ecosystem for:
 * **Faculty:** To record attendance and grade phases securely.
 * **Verifiers:** To publicly validate certificates without needing database access.
 
-## Architecture
+## Architecture & Design
+
+The system is modeled as a permissioned network where the **UGC** acts as the root trust anchor, authorizing Universities and Colleges to participate.
 
 The project follows a hybrid data approach:
 1. **On-Chain (Blockchain):** Stores critical entities (Student Identity, College Accreditation, Final Certificates) and cryptographic hashes of off-chain data.
 2. **Off-Chain (Local):** Stores granular details (Daily Attendance logs, Phase-wise Grade breakdowns) to preserve ledger performance and privacy.
 3. **Verification:** Off-chain data is hashed and cross-referenced with the on-chain hash to ensure integrity.
 
-
-
-[Image of Hyperledger Fabric transaction flow]
-
+![EduChain Architecture](./images/architecture.png)
+*(Fig 1. Proposed Framework illustrating the interaction between Stakeholders, Portals, and the Hyperledger Fabric Network)*
 
 ## Prerequisites
 
@@ -94,16 +107,7 @@ npm install
 
 While the deployment script handles the network and keys, you must ensure the application code points to the correct wallet location on your machine.
 
-### Step 1: Connection Profile
-
-Copy the connection profile from your running Fabric network into the backend folder.
-
-```bash
-# Example command (adjust path to your fabric-samples location)
-cp ~/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/connection-org1.json ./connection.json
-```
-
-### Step 2: Update Wallet Paths
+### Update Wallet Paths
 
 The application code references a specific wallet directory. You must update this path to match your machine.
 
@@ -171,6 +175,20 @@ The Chaincode (Go) defines the following assets:
 * **Student:** ID, Name, Branch, Grades (Map), Attendance (Map).
 * **College:** ID, Name, AccreditationStatus, ApplicationStatus.
 * **Certificate:** CertificateID, TransactionID, and OffChainDataHash.
+
+
+## Security & Role-Based Access Control (RBAC)
+
+EduChain implements strict RBAC to prevent unauthorized data modification:
+
+* **UGC Admins:** Can accredit or reject colleges.
+* **Faculty:** Can only update grades for students within their own college/department.
+* **Students:** Have read-only access to their own records.
+
+
+## Future Work
+
+The current implementation utilizes the Hyperledger Fabric Test Network. Future phases will involve migrating to a multi-system production network with distributed peer nodes for enhanced scalability and integrating Hyperledger Explorer for network monitoring.
 
 ## Limitations
 
