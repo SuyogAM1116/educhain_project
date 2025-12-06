@@ -1,4 +1,4 @@
-# EduChain: Hyperledger-Powered Decentralized University Services
+# EduChain: Hyperledger-Powered Decentralized University Services Management Framework
 
 EduChain is a decentralized framework designed to manage university services securely and transparently. Leveraging Hyperledger Fabric, this project eliminates paper-based inefficiencies and prevents fraud in academic credentialing through a permissioned blockchain network.
 
