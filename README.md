@@ -27,7 +27,7 @@ The project follows a hybrid data approach:
 Before running the project, ensure you have the following installed:
 * Docker & Docker Compose
 * Node.js (v14 or higher)
-* Hyperledger Fabric Samples (v2.4+ recommended)
+* Go (v1.17 or higher)
 
 ## Project Structure
 
@@ -39,14 +39,23 @@ Before running the project, ensure you have the following installed:
 
 Follow these steps to set up the environment from scratch.
 
-### 1. Clone the Repository
+### 1. Install Hyperledger Fabric
+
+You must have the Fabric Binaries and the `fabric-samples` repository installed. Run the following command in your workspace directory (parent folder):
 
 ```bash
-git clone [https://github.com/SuyogAM1116/educhain_project.git](https://github.com/SuyogAM1116/educhain_project.git)
+# Download Fabric Docker images, binaries, and samples (v2.5.x)
+curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.5.9 1.5.12
+```
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/SuyogAM1116/educhain_project.git
 cd educhain_project
 ```
 
-### 2. Start the Network & Generate Identities
+### 3. Start the Network & Generate Identities
 
 We have provided a unified script that:
 1. Starts the Hyperledger Fabric Test Network (with CouchDB and CAs).
@@ -64,7 +73,7 @@ chmod +x deploy.sh
 ```
 **Note: This script performs manual key generation using fabric-ca-client to simulate a real-world MSP setup. It automatically populates the backend/wallet directory, so you do not need to run separate enrollment scripts.**
 
-### 3. Backend Setup
+### 4. Backend Setup
 
 Navigate to the backend directory and install dependencies.
 
