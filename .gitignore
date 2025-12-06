@@ -1,0 +1,35 @@
+# --- Dependencies ---
+node_modules/
+dist/
+package-lock.json   # (Optional: remove this line if you WANT to version lock your dependencies, but often good to ignore in prototypes)
+
+# --- Environment Variables ---
+.env
+
+# --- Hyperledger Fabric Wallets & Identity (CRITICAL SECURITY) ---
+# Never upload private keys or identities to GitHub!
+wallet/
+keystore/
+signcerts/
+
+# --- Connection Profiles ---
+# These contain absolute paths specific to your machine
+connection.json
+connection-org1.json
+ccp-generate.sh
+
+# --- Local "Off-Chain" Databases ---
+# These are the JSON files your utils created. 
+# You want users to generate their own empty ones, not use yours.
+college_credentials.json
+user_credentials.json
+*_credentials.json
+
+# --- Logs & Debug ---
+npm-debug.log
+*.log
+
+# --- IDE & System Files ---
+.DS_Store
+.vscode/
+.idea/
