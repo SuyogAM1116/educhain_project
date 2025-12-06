@@ -1,2 +1,168 @@
-# educhain_project
-Our final year project which focuses on creating a blockchain network for university services management
+# EduChain: Hyperledger-Powered Decentralized University Services
+
+EduChain is a decentralized framework designed to manage university services securely and transparently. Leveraging Hyperledger Fabric, this project eliminates paper-based inefficiencies and prevents fraud in academic credentialing through a permissioned blockchain network.
+
+## Overview
+
+The system creates a tamper-proof ecosystem for:
+* **Colleges:** To register and issue verifiable credentials.
+* **Students:** To manage their identity and view grades.
+* **Faculty:** To record attendance and grade phases securely.
+* **Verifiers:** To publicly validate certificates without needing database access.
+
+## Architecture
+
+The project follows a hybrid data approach:
+1. **On-Chain (Blockchain):** Stores critical entities (Student Identity, College Accreditation, Final Certificates) and cryptographic hashes of off-chain data.
+2. **Off-Chain (Local):** Stores granular details (Daily Attendance logs, Phase-wise Grade breakdowns) to preserve ledger performance and privacy.
+3. **Verification:** Off-chain data is hashed and cross-referenced with the on-chain hash to ensure integrity.
+
+## Prerequisites
+
+Before running the project, ensure you have the following installed:
+* Docker & Docker Compose
+* Node.js (v14 or higher)
+* Hyperledger Fabric Samples (v2.4+ recommended)
+
+## Project Structure
+
+* **backend/**: Node.js Express application acting as the middleware API.
+* **chaincode/**: Go Smart Contracts defining the business logic.
+* **network/**: Scripts to bootstrap the Fabric test-network and deploy chaincode.
+
+## Installation & Setup
+
+Follow these steps to set up the environment from scratch.
+
+### 1. Clone the Repository
+
+```bash
+git clone [https://github.com/your-username/EduChain.git](https://github.com/your-username/EduChain.git)
+cd EduChain
+```
+
+### 2. Start the Network
+
+We have provided a utility script to interface with the standard Fabric `test-network`.
+
+*Note: Ensure you have the `fabric-samples` directory installed on your machine and that the deploy script points to it.*
+
+1. Open `network/deploy.sh`.
+2. Edit the `TEST_NETWORK_DIR` variable to point to your local `fabric-samples/test-network` folder.
+3. Run the deployment script:
+
+```bash
+cd network
+chmod +x deploy.sh
+./deploy.sh
+```
+
+### 3. Backend Setup
+
+Navigate to the backend directory and install dependencies.
+
+```bash
+cd ../backend
+npm install
+```
+
+## Configuration (Critical)
+
+Because Hyperledger Fabric relies on cryptographic identity files specific to your machine, you must configure the backend to connect to your local network.
+
+### Step 1: Connection Profile
+
+Copy the connection profile from your running Fabric network into the backend folder.
+
+```bash
+# Example command (adjust path to your fabric-samples location)
+cp ~/fabric-samples/test-network/organizations/peerOrganizations/[org1.example.com/connection-org1.json](https://org1.example.com/connection-org1.json) ./connection.json
+```
+
+### Step 2: Update Wallet Paths
+
+The application code references a specific wallet directory. You must update this path to match your machine.
+
+1. Open `controllers/studentController.js` (and similarly `facultyController.js`, `collegeController.js`, `verificationController.js`).
+2. Find the `connectToNetwork` function.
+3. Locate the line defining `walletPath`.
+4. Change the path to point to the `wallet` folder inside your `backend` directory.
+
+**Change this:**
+```javascript
+const walletPath = path.resolve('/home/Fabric/educhain-backend/wallet');
+```
+**To this (recommended for portability):**
+```javaScript
+const walletPath = path.join(process.cwd(), 'wallet');
+```
+
+### Step 3: Initialize Identities
+
+You need to generate the Admin and User credentials before the app can talk to the blockchain.
+
+```bash
+# Run the enrollment scripts (ensure these exist in your utils or root)
+node enrollAdmin.js
+node registerUser.js
+```
+
+## Running the Application
+
+Start the backend server:
+
+```bash
+node app.js
+```
+
+The server will run on Port 5000.
+
+## API Endpoints
+
+### College Management
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/colleges/register` | Register a new college application |
+| POST | `/api/colleges/admin/approve/:id` | Approve a college (Admin Only) |
+| GET | `/api/colleges/certificate/:id` | View College Accreditation Certificate |
+
+### Faculty Services
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/faculty/register` | Register new faculty member |
+| POST | `/api/students/attendance` | Mark student attendance for a course |
+| POST | `/api/students/grades` | Upload student grades (Phase 1/2/Final) |
+
+### Student Services
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/students/register` | Enroll a new student |
+| POST | `/api/students/certificate/issue` | Issue a Course Certificate |
+| GET | `/api/students/query/:id` | View Student Profile |
+
+### Public Verification
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| GET | `/api/verification/college/:id` | Verify College Validity |
+| GET | `/api/verification/student/certificate/:id` | Verify Student Certificate by ID |
+
+## Smart Contract Data Model
+
+The Chaincode (Go) defines the following assets:
+
+* **Student:** ID, Name, Branch, Grades (Map), Attendance (Map).
+* **College:** ID, Name, AccreditationStatus, ApplicationStatus.
+* **Certificate:** CertificateID, TransactionID, and OffChainDataHash.
+
+## Limitations
+
+* **Data Persistence:** Detailed attendance and grade logs are currently stored in an in-memory structure (`offChainDataStore.js`). Restarting the backend will reset this specific data, though on-chain certificates remain permanent.
+* **Authentication:** Basic authentication is handled via a local JSON file (`user_credentials.json`).
+
+## License
+
+Distributed under the MIT License.
