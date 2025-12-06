@@ -92,7 +92,7 @@ Copy the connection profile from your running Fabric network into the backend fo
 
 ```bash
 # Example command (adjust path to your fabric-samples location)
-cp ~/fabric-samples/test-network/organizations/peerOrganizations/[org1.example.com/connection-org1.json](https://org1.example.com/connection-org1.json) ./connection.json
+cp ~/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/connection-org1.json ./connection.json
 ```
 
 ### Step 2: Update Wallet Paths
