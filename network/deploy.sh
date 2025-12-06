@@ -20,13 +20,19 @@ if [ ! -d "$TEST_NETWORK_DIR" ]; then
     exit 1
 fi
 
-# 2. Start Network
+# 2. Cleanup Old Backend Configs (Matches your manual 'rm' steps)
+echo "🧹 Cleaning up old wallet and connection profiles..."
+rm -rf "$BACKEND_DIR/wallet"
+rm -f "$BACKEND_DIR/connection.json"
+
+# 3. Start Network
 echo "🚀 Starting Fabric Network..."
 cd "$TEST_NETWORK_DIR"
 ./network.sh down
 ./network.sh up createChannel -c $CHANNEL_NAME -ca -s couchdb
 
-# 3. Deploy Chaincode (Using the simplified script provided by test-network)
+# 4. Deploy Chaincode 
+# (This ONE command replaces: package, install, approve, and commit)
 echo "📜 Deploying Chaincode..."
 ./network.sh deployCC \
     -c $CHANNEL_NAME \
@@ -35,7 +41,7 @@ echo "📜 Deploying Chaincode..."
     -ccl go \
     -ccep "OR('Org1MSP.peer','Org2MSP.peer')"
 
-# 4. MANUAL WALLET GENERATION (Replicating your manual commands)
+# 5. MANUAL WALLET GENERATION (Replicating your manual commands)
 echo "🔑 Generating Identities & Wallet Keys..."
 
 # Setup Environment for Org2 CA Client
@@ -50,7 +56,7 @@ fabric-ca-client register --caname ca-org2 --id.name User1 --id.secret user1pw -
 echo "   -> Enrolling User1 to get certificates..."
 fabric-ca-client enroll -u https://User1:user1pw@localhost:8054 --caname ca-org2 --tls.certfiles ${TEST_NETWORK_DIR}/organizations/fabric-ca/org2/tls-cert.pem -M ${TEST_NETWORK_DIR}/organizations/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp --enrollment.profile tls --csr.cn peer0.org2.example.com
 
-# 5. COPY KEYS TO BACKEND WALLET
+# 6. COPY KEYS TO BACKEND WALLET
 echo "📂 Copying Crypto Material to Backend Wallet..."
 
 # Create Directories
